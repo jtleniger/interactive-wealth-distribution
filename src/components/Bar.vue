@@ -1,12 +1,13 @@
 <template>
   <div>
-    <canvas ref="canvas" width="1080" height="540" />
+    <canvas ref="canvas" width="1080" height="2160" />
   </div>
 </template>
 
 <script>
 const SEGMENT_COUNT = 5;
 const CANVAS_WIDTH = 1080;
+const CANVAS_HEIGHT = 2160
 
 const COLORS = [
   '#D32F2F',
@@ -16,20 +17,48 @@ const COLORS = [
   '#FBC02D'
 ]
 
+const HANDLE_COLOR = '#616161';
+
 class Segment {
-  constructor (position) {
+  constructor (ctx, previous, position) {
+    this.ctx = ctx;
+    this.previous = previous;
     this.position = position;
     this.percent = 20;
     this.color = COLORS[position];
   }
 
-  get widthOnCanvas() {
-    return Math.round((this.percent / 100) * CANVAS_WIDTH);
+  get canvasWidth () {
+    return CANVAS_WIDTH - 45;
   }
 
-  draw(ctx) {
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.position * this.widthOnCanvas, 0, this.widthOnCanvas, 540);
+  get canvasHeight () {
+    return Math.round((this.percent / 100) * CANVAS_HEIGHT);
+  }
+
+  get startY () {
+    if (!this.previous) {
+      return 0;
+    }
+
+    return this.previous.endY;
+  }
+
+  get endY () {
+    return this.startY + this.canvasHeight;
+  }
+
+  draw() {
+    this.ctx.fillStyle = this.color;
+    this.ctx.fillRect(0, this.startY, this.canvasWidth, this.canvasHeight);
+
+    if (this.previous) {
+      this.ctx.fillStyle = HANDLE_COLOR;
+      this.ctx.fillRect(0, this.startY - 10, this.canvasWidth + 20, 20);
+      this.ctx.beginPath();
+      this.ctx.arc(this.canvasWidth, this.startY, 45, 0, 2 * Math.PI, false);
+      this.ctx.fill();
+    }
   }
 }
 
@@ -44,13 +73,19 @@ export default {
   methods: {
     initSegments: function () {
       this.segments = [];
+      var previous = null;
 
       for (var i = 0; i < SEGMENT_COUNT; i++) {
-        this.segments.push(new Segment(i));
-        this.segments[i].draw(this.ctx);
+        var segment = new Segment(this.ctx, previous, i);
+      
+        this.segments.push(segment);
+
+        previous = segment;
       }
 
-      console.log(this.segments);
+      for (var j = 0; j < SEGMENT_COUNT; j++) {
+        this.segments[j].draw();
+      }
     },
   },
   mounted: function () {
@@ -63,5 +98,6 @@ export default {
 <style scoped lang="scss">
 canvas {
   max-width: 100%;
+  max-height: 100vh;
 }
 </style>
