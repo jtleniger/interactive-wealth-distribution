@@ -1,5 +1,12 @@
 <template>
-  <canvas v-on:mousedown="down" v-on:touchstart="down" ref="canvas" width="1080" height="2160" />
+  <canvas
+    v-on:mousedown="down"
+    v-on:touchstart="down"
+    v-on:mousemove="move"
+    v-on:touchmove="move"
+    ref="canvas"
+    width="1080"
+    height="2160" />
 </template>
 
 <script>
@@ -131,7 +138,8 @@ export default {
       canvas: null,
       ctx: null,
       startCoords: null,
-      stopCoords: null
+      stopCoords: null,
+      throttled: false,
     }
   },
   methods: {
@@ -167,27 +175,40 @@ export default {
 
       this.startCoords = coords;
     },
-    up: function (event) {
+    doMove: function (event) {
+      if (!this.dragging) {
+        return;
+      }
+
       let coords = getCoordsFromEvent(event);
 
       coords = this.convertToCanvasCoords(coords);
-
-      const dragged = this.dragging;
-
-      this.dragging = null;
-
-      if (!dragged) {
-        return;
-      }
 
       this.stopCoords = coords;
 
       const delta = canvasYPercentDelta(this.startCoords.y, this.stopCoords.y);
 
-      dragged.percent -= delta;
-      dragged.previousSegment.percent += delta;
+      this.dragging.percent -= delta;
+      this.dragging.previousSegment.percent += delta;
 
       this.draw();
+
+      this.startCoords = this.stopCoords;
+    },
+    up: function (event) {
+      this.doMove(event);
+      this.dragging = null;
+    },
+    move: function (event) {
+      if (this.throttled) {
+        return;
+      }
+
+      this.doMove(event);
+
+      this.throttled = true;
+
+      setTimeout(function() { this.throttled = false; }.bind(this), 16);
     },
     clickedSegment: function (coords) {
       for (var i = 0; i < SEGMENT_COUNT; i++) {
