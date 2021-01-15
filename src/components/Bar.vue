@@ -13,7 +13,8 @@
 const SEGMENT_COUNT = 5;
 const CANVAS_WIDTH = 1080;
 const CANVAS_HEIGHT = 2160
-const HANDLE_THICKNESS = 6;
+const HANDLE_THICKNESS = 10;
+const AXIS_THICKNESS = HANDLE_THICKNESS;
 
 const COLORS = [
   '#CE93D8',
@@ -23,7 +24,8 @@ const COLORS = [
   '#C5E1A5'
 ]
 
-const HANDLE_COLOR = '#EEEEEE';
+const HANDLE_COLOR = '#B0BEC5';
+const AXIS_COLOR = HANDLE_COLOR;
 
 const CLICK_BUFFER = 20;
 
@@ -45,7 +47,7 @@ class Segment {
   }
 
   get startX () {
-    return Math.round(CANVAS_WIDTH / 6);
+    return Math.round(CANVAS_WIDTH / 3);
   }
 
   get startY () {
@@ -158,9 +160,24 @@ export default {
       this.draw();
     },
     draw: function () {
+      this.ctx.fillStyle = '#263238';
+      this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+
       for (var j = 0; j < SEGMENT_COUNT; j++) {
         this.segments[j].draw();
       }
+
+      this.ctx.fillStyle = AXIS_COLOR;
+      this.ctx.fillRect(this.segments[0].startX - 60, 0, AXIS_THICKNESS, CANVAS_HEIGHT);
+      this.ctx.fillRect(this.segments[0].startX - 60, 0, AXIS_THICKNESS, CANVAS_HEIGHT);
+      this.ctx.fillRect(this.segments[0].startX - 90, 0, 60, AXIS_THICKNESS);
+      this.ctx.fillRect(this.segments[0].startX - 90, CANVAS_HEIGHT - AXIS_THICKNESS, 60, AXIS_THICKNESS);    
+      this.ctx.save();
+      this.ctx.textAlign = 'center';
+      this.ctx.rotate(-Math.PI/2);
+      this.ctx.font = '128px Helvetica';
+      this.ctx.fillText('share of wealth', CANVAS_HEIGHT / 2 - CANVAS_HEIGHT, this.segments[0].startX - 100);
+      this.ctx.restore();
     },
     down: function (event) {
       let coords = getCoordsFromEvent(event);
@@ -228,7 +245,7 @@ export default {
   },
   mounted: function () {
     this.canvas = this.$refs.canvas;
-    this.ctx = this.canvas.getContext('2d');
+    this.ctx = this.canvas.getContext('2d', { alpha: false });
     window.addEventListener('mouseup', this.up);
     window.addEventListener('touchend', this.up);
     this.initSegments();
@@ -239,6 +256,6 @@ export default {
 <style scoped lang="scss">
 canvas {
   max-width: 100%;
-  max-height: 80vh;
+  max-height: 70vh;
 }
 </style>
