@@ -1,16 +1,18 @@
 <template>
   <canvas
-    v-on:mousedown="down"
-    v-on:touchstart="down"
-    v-on:mousemove="move"
-    v-on:touchmove="move"
+    v-on="readonly ? {} : {
+      mousedown: down,
+      touchstart: down,
+      mousemove: move,
+      touchmove: move,
+    }"
     ref="canvas"
     width="1080"
     height="1187" />
 </template>
 
 <script>
-import { SEGMENT_COLORS } from '@/common.js';
+import { SEGMENT_COLORS, INITIAL_PERCENTS } from '@/common.js';
 
 const SEGMENT_COUNT = 5;
 const CANVAS_WIDTH = 1080;
@@ -23,13 +25,14 @@ const LIGHT_COLOR = '#BDBDBD';
 const BACKGROUND_COLOR = '#212121';
 
 class Segment {
-  constructor (ctx, previous, index, percent = 20) {
+  constructor (ctx, previous, index, percent, fullWidth) {
     this.ctx = ctx;
     this.previous = previous;
     this.next = null;
     this.index = index;
     this.percent = percent;
     this.color = SEGMENT_COLORS[index];
+    this.fullWidth = fullWidth;
   }
 
   get decimalPercent () {
@@ -37,7 +40,7 @@ class Segment {
   } 
 
   get width () {
-    return Math.round((2 * CANVAS_WIDTH) / 3);
+    return this.fullWidth ? CANVAS_WIDTH : Math.round((2 * CANVAS_WIDTH) / 3);
   }
 
   get height () {
@@ -45,7 +48,7 @@ class Segment {
   }
 
   get startX () {
-    return Math.round(CANVAS_WIDTH / 5);
+    return this.fullWidth ? 0 : Math.round(CANVAS_WIDTH / 5);
   }
 
   get startY () {
@@ -137,6 +140,20 @@ function getCoordsFromEvent(event) {
 
 export default {
   name: 'Bar',
+  props: {
+    axis: {
+      type: Boolean,
+      default: true
+    },
+    readonly: {
+      type: Boolean,
+      default: false
+    },
+    values: {
+      type: Array,
+      default: null
+    }
+  },
   data: function () {
     return {
       dragging: null,
@@ -258,12 +275,18 @@ export default {
         y: lerp(coords.y, 0, this.$refs.canvas.clientHeight, 0, CANVAS_HEIGHT)
       }
     },
-    initSegments: function () {
+    initSegments: function (value) {
       this.segments = [];
       var previous = null;
 
+      let defaults = [...INITIAL_PERCENTS];
+      
+      if (value && value instanceof Array && value.length === 5) {
+        defaults = value;
+      }
+
       for (var i = 0; i < SEGMENT_COUNT; i++) {
-        var segment = new Segment(this.ctx, previous, i);
+        var segment = new Segment(this.ctx, previous, i, defaults[i], !this.axis);
 
         if (previous) {
           previous.next = segment;
@@ -279,11 +302,19 @@ export default {
     this.canvas = this.$refs.canvas;
     this.ctx = this.canvas.getContext('2d', { alpha: false });
     this.ctx.translate(0.5, 0.5);
-    window.addEventListener('mouseup', this.up);
-    window.addEventListener('touchend', this.up);
-    this.initSegments();
+
+    if (!this.readonly) {
+      window.addEventListener('mouseup', this.up);
+      window.addEventListener('touchend', this.up);
+    }
+    
+    this.initSegments(this.values);
     this.drawBackground();
-    this.drawAxis();
+
+    if (this.axis) {
+      this.drawAxis();
+    }
+
     this.drawSegments();
   }
 }

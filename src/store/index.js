@@ -1,20 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
-Vue.use(Vuex)
+import { INITIAL_PERCENTS } from '@/common.js';
 
-const INITIAL_PERCENTS = [
-  20,
-  20,
-  20,
-  20,
-  20
-];
+Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
     percents: [...INITIAL_PERCENTS],
-    saved: {}
+    saved: {
+      ideal: [],
+      current: []
+    }
   },
   mutations: {
     setPercents (state, payload) {
