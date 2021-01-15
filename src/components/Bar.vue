@@ -30,9 +30,10 @@ const BACKGROUND_COLOR = '#212121';
 const CLICK_BUFFER = 40;
 
 class Segment {
-  constructor (ctx, previousSegment, index, percent = 0.20) {
+  constructor (ctx, previous, index, percent = 0.20) {
     this.ctx = ctx;
-    this.previousSegment = previousSegment;
+    this.previous = previous;
+    this.next = null;
     this.index = index;
     this.percent = percent;
     this.color = SEGMENT_COLORS[index];
@@ -51,11 +52,11 @@ class Segment {
   }
 
   get startY () {
-    if (!this.previousSegment) {
+    if (!this.previous) {
       return 0;
     }
 
-    return this.previousSegment.endY;
+    return this.previous.endY;
   }
 
   get endX () {
@@ -86,7 +87,7 @@ class Segment {
     this.ctx.fillStyle = this.color;
     this.ctx.fillRect(this.startX, this.startY, this.width, this.height);
 
-    if (!this.previousSegment) {
+    if (!this.previous) {
       return;
     }
 
@@ -95,7 +96,7 @@ class Segment {
   }
 
   isHandle (coords) {
-    if (!this.previousSegment) {
+    if (!this.previous) {
       return false;
     }
 
@@ -149,14 +150,18 @@ export default {
   methods: {
     initSegments: function () {
       this.segments = [];
-      var previousSegment = null;
+      var previous = null;
 
       for (var i = 0; i < SEGMENT_COUNT; i++) {
-        var segment = new Segment(this.ctx, previousSegment, i);
+        var segment = new Segment(this.ctx, previous, i);
+
+        if (previous) {
+          previous.next = segment;
+        }
       
         this.segments.push(segment);
 
-        previousSegment = segment;
+        previous = segment;
       }
 
       this.draw();
@@ -207,12 +212,12 @@ export default {
 
       const delta = canvasYPercentDelta(this.startCoords.y, this.stopCoords.y);
 
+      this.startCoords = this.stopCoords;
+
       this.dragging.percent -= delta;
-      this.dragging.previousSegment.percent += delta;
+      this.dragging.previous.percent += delta;
 
       this.draw();
-
-      this.startCoords = this.stopCoords;
       
       this.$emit('percents', this.percents());
     },
