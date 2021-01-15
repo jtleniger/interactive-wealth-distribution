@@ -108,6 +108,10 @@ class Segment {
             (coords.y <= (this.handleEndY + CLICK_BUFFER)) &&
             (coords.y >= (this.handleStartY - CLICK_BUFFER));
   }
+
+  round() {
+    this.percent = Math.round(this.percent);
+  }
 }
 
 function canvasYPercentDelta(yStart, yStop) {
@@ -157,8 +161,8 @@ export default {
       this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
     },
     drawSegments: function () {
-      for (var j = 0; j < SEGMENT_COUNT; j++) {
-        this.segments[j].draw();
+      for (var i = 0; i < SEGMENT_COUNT; i++) {
+        this.segments[i].draw();
       }
     },
     drawAxis: function () {
@@ -192,6 +196,7 @@ export default {
     up: function (event) {
       this.doMove(event);
       this.dragging = null;
+      this.roundPercents();
     },
     move: function (event) {
       if (this.throttled) {
@@ -233,6 +238,11 @@ export default {
       this.drawSegments();
       
       this.$emit('percents', this.percents());
+    },
+    roundPercents: function () {
+      for (var i = 0; i < SEGMENT_COUNT; i++) {
+        this.segments[i].round();
+      }
     },
 
     /* Helpers */

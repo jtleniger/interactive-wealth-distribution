@@ -1,8 +1,9 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-import GuessCurrent from '../views/GuessCurrent.vue'
+import Current from '../views/Current.vue'
 import Ideal from '../views/Ideal.vue'
+import Compare from '../views/Compare.vue'
 
 Vue.use(VueRouter)
 
@@ -13,14 +14,19 @@ const routes = [
     component: Home
   },
   {
-    path: '/guess-current',
-    name: 'GuessCurrent',
-    component: GuessCurrent
+    path: '/current',
+    name: 'Current',
+    component: Current
   },
   {
     path: '/ideal',
     name: 'Ideal',
     component: Ideal
+  },
+  {
+    path: '/compare',
+    name: 'Compare',
+    component: Compare
   }
 ]
 

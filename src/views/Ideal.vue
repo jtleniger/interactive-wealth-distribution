@@ -3,10 +3,10 @@
     <div>
       cool. now what do you think it should be? what's an <em>ideal</em> split?
     </div>
-    <Bar/>
+    <Bar v-on:percents="recordPercents" />
     <Distribution/>
     <div>
-      <router-link to="/foo">done</router-link>
+      <router-link to="/compare">done</router-link>
     </div>
   </div>
 </template>
@@ -20,10 +20,15 @@ export default {
   components: {
     Bar,
     Distribution
+  },
+  methods: {
+    recordPercents: function (args) {
+      this.$store.commit('setPercents', args);
+    }
+  },
+  beforeRouteLeave (to, from, next) {
+    this.$store.commit('savePercents', 'ideal');
+    next();
   }
 }
 </script>
-
-<style lang="scss" scoped>
-
-</style>

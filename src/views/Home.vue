@@ -4,7 +4,10 @@
       what do you think the distribution of wealth is in the us?
     </div>
     <div>
-      <router-link to="/guess-current">go on...</router-link>
+      make your best guess.
+    </div>
+    <div>
+      <router-link to="/current">okay</router-link>
     </div>
   </div>
 </template>
@@ -12,6 +15,6 @@
 <script>
 
 export default {
-  name: 'home',
+  name: 'Home',
 }
 </script>
