@@ -6,17 +6,17 @@
     v-on:touchmove="move"
     ref="canvas"
     width="1080"
-    height="2160" />
+    height="1187" />
 </template>
 
 <script>
 const SEGMENT_COUNT = 5;
 const CANVAS_WIDTH = 1080;
-const CANVAS_HEIGHT = 2160
+const CANVAS_HEIGHT = 1187;
 const HANDLE_THICKNESS = 10;
 const AXIS_THICKNESS = HANDLE_THICKNESS;
 
-const COLORS = [
+const SEGMENT_COLORS = [
   '#CE93D8',
   '#9FA8DA',
   '#81D4FA',
@@ -24,10 +24,10 @@ const COLORS = [
   '#C5E1A5'
 ]
 
-const HANDLE_COLOR = '#B0BEC5';
-const AXIS_COLOR = HANDLE_COLOR;
+const LIGHT_COLOR = '#BDBDBD';
+const BACKGROUND_COLOR = '#212121';
 
-const CLICK_BUFFER = 20;
+const CLICK_BUFFER = 40;
 
 class Segment {
   constructor (ctx, previousSegment, index, percent = 0.20) {
@@ -35,7 +35,7 @@ class Segment {
     this.previousSegment = previousSegment;
     this.index = index;
     this.percent = percent;
-    this.color = COLORS[index];
+    this.color = SEGMENT_COLORS[index];
   }
 
   get width () {
@@ -47,7 +47,7 @@ class Segment {
   }
 
   get startX () {
-    return Math.round(CANVAS_WIDTH / 3);
+    return Math.round(CANVAS_WIDTH / 5);
   }
 
   get startY () {
@@ -66,33 +66,35 @@ class Segment {
     return this.startY + this.height;
   }
 
-  get handleStartX() {
+  get handleStartX () {
     return this.startX;
   }
 
-  get handleStartY() {
+  get handleStartY () {
     return (this.startY - (HANDLE_THICKNESS / 2));
   }
 
-  get handleEndX() {
+  get handleEndX () {
     return this.startX + this.width;
   }
 
-  get handleEndY() {
+  get handleEndY () {
     return this.handleStartY + HANDLE_THICKNESS;
   }
 
-  draw() {
+  draw () {
     this.ctx.fillStyle = this.color;
     this.ctx.fillRect(this.startX, this.startY, this.width, this.height);
 
-    if (this.previousSegment) {
-      this.ctx.fillStyle = HANDLE_COLOR;
-      this.ctx.fillRect(this.handleStartX, this.handleStartY, this.width, HANDLE_THICKNESS);
+    if (!this.previousSegment) {
+      return;
     }
+
+    this.ctx.fillStyle = LIGHT_COLOR;
+    this.ctx.fillRect(this.handleStartX, this.handleStartY, this.width, HANDLE_THICKNESS);
   }
 
-  isHandle(coords) {
+  isHandle (coords) {
     if (!this.previousSegment) {
       return false;
     }
@@ -160,14 +162,14 @@ export default {
       this.draw();
     },
     draw: function () {
-      this.ctx.fillStyle = '#263238';
+      this.ctx.fillStyle = BACKGROUND_COLOR;
       this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
       for (var j = 0; j < SEGMENT_COUNT; j++) {
         this.segments[j].draw();
       }
 
-      this.ctx.fillStyle = AXIS_COLOR;
+      this.ctx.fillStyle = LIGHT_COLOR;
       this.ctx.fillRect(this.segments[0].startX - 60, 0, AXIS_THICKNESS, CANVAS_HEIGHT);
       this.ctx.fillRect(this.segments[0].startX - 60, 0, AXIS_THICKNESS, CANVAS_HEIGHT);
       this.ctx.fillRect(this.segments[0].startX - 90, 0, 60, AXIS_THICKNESS);
@@ -175,7 +177,7 @@ export default {
       this.ctx.save();
       this.ctx.textAlign = 'center';
       this.ctx.rotate(-Math.PI/2);
-      this.ctx.font = '128px Helvetica';
+      this.ctx.font = '64px Verdana';
       this.ctx.fillText('share of wealth', CANVAS_HEIGHT / 2 - CANVAS_HEIGHT, this.segments[0].startX - 100);
       this.ctx.restore();
     },
@@ -211,6 +213,11 @@ export default {
       this.draw();
 
       this.startCoords = this.stopCoords;
+      
+      this.$emit('percents', this.percents());
+    },
+    percents: function () {
+      return this.segments.map(s => s.percent);
     },
     up: function (event) {
       this.doMove(event);
@@ -255,7 +262,7 @@ export default {
 
 <style scoped lang="scss">
 canvas {
-  max-width: 100%;
-  max-height: 70vh;
+  max-width: 1080px;
+  max-height: 50vh;
 }
 </style>

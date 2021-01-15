@@ -1,23 +1,17 @@
 <template>
-  <div class="home">
-    <Bar/>
+  <div class="container">
+    <div>
+      what do you think the distribution of wealth is in the us?
+    </div>
+    <div>
+      <router-link to="/guess-current">go on...</router-link>
+    </div>
   </div>
 </template>
 
 <script>
-import Bar from '@/components/Bar.vue'
 
 export default {
-  name: 'Home',
-  components: {
-    Bar
-  }
+  name: 'home',
 }
 </script>
-
-<style lang="scss" scoped>
-.home {
-  display: flex;
-  justify-content: center;
-}
-</style>

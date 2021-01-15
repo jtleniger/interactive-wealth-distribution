@@ -5,7 +5,54 @@
 </template>
 
 <style lang="scss">
+* {
+  box-sizing: border-box;
+}
+
+$light-color: #BDBDBD;
+
 body {
-  background-color: #263238;
+  background-color: #212121;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  color: $light-color;
+  font-size: 13px;
+  display: flex;
+  justify-content: center;
+}
+
+a {
+  color: $light-color;
+  text-decoration: none;
+  background-color: #424242;
+  border: 1px solid $light-color;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+#app {
+  max-width: 1080px;
+  min-height: 90vh;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+
+  div, canvas {
+    padding-bottom: 1rem; 
+  }
+
+  div {
+    &:first-child {
+      padding-top: 1rem;
+    }
+
+    text-align: center;
+    width: 90%;
+  }
 }
 </style>
