@@ -7,7 +7,7 @@
       touchmove: move,
     }"
     ref="canvas"
-    width="1080"
+    :width="canvasWidth"
     height="1187" />
 </template>
 
@@ -15,7 +15,6 @@
 import { SEGMENT_COLORS, INITIAL_PERCENTS } from '@/common.js';
 
 const SEGMENT_COUNT = 5;
-const CANVAS_WIDTH = 1080;
 const CANVAS_HEIGHT = 1187;
 const HANDLE_THICKNESS = 8;
 const AXIS_THICKNESS = HANDLE_THICKNESS;
@@ -25,7 +24,7 @@ const LIGHT_COLOR = '#BDBDBD';
 const BACKGROUND_COLOR = '#212121';
 
 class Segment {
-  constructor (ctx, previous, index, percent, fullWidth) {
+  constructor (ctx, previous, index, percent, canvasWidth, fullWidth) {
     this.ctx = ctx;
     this.previous = previous;
     this.next = null;
@@ -33,6 +32,7 @@ class Segment {
     this.percent = percent;
     this.color = SEGMENT_COLORS[index];
     this.fullWidth = fullWidth;
+    this.canvasWidth = canvasWidth;
   }
 
   get decimalPercent () {
@@ -40,7 +40,7 @@ class Segment {
   } 
 
   get width () {
-    return this.fullWidth ? CANVAS_WIDTH : Math.round((2 * CANVAS_WIDTH) / 3);
+    return this.fullWidth ? this.canvasWidth : Math.round((2 * this.canvasWidth) / 3);
   }
 
   get height () {
@@ -48,7 +48,7 @@ class Segment {
   }
 
   get startX () {
-    return this.fullWidth ? 0 : Math.round(CANVAS_WIDTH / 5);
+    return this.fullWidth ? 0 : Math.round(this.canvasWidth / 5);
   }
 
   get startY () {
@@ -152,6 +152,10 @@ export default {
     values: {
       type: Array,
       default: null
+    },
+    canvasWidth: {
+      type: Number,
+      default: 1080
     }
   },
   data: function () {
@@ -169,7 +173,7 @@ export default {
     /* Drawing Methods */
     drawBackground: function () {
       this.ctx.fillStyle = BACKGROUND_COLOR;
-      this.ctx.fillRect(-0.5, -0.5, CANVAS_WIDTH, CANVAS_HEIGHT);
+      this.ctx.fillRect(-0.5, -0.5, this.canvasWidth, CANVAS_HEIGHT);
     },
     drawSegments: function () {
       for (var i = 0; i < SEGMENT_COUNT; i++) {
@@ -271,7 +275,7 @@ export default {
     },
     convertToCanvasCoords: function (coords) {
       return {
-        x: lerp(coords.x, 0, this.$refs.canvas.clientWidth, 0, CANVAS_WIDTH),
+        x: lerp(coords.x, 0, this.$refs.canvas.clientWidth, 0, this.canvasWidth),
         y: lerp(coords.y, 0, this.$refs.canvas.clientHeight, 0, CANVAS_HEIGHT)
       }
     },
@@ -286,7 +290,7 @@ export default {
       }
 
       for (var i = 0; i < SEGMENT_COUNT; i++) {
-        var segment = new Segment(this.ctx, previous, i, defaults[i], !this.axis);
+        var segment = new Segment(this.ctx, previous, i, defaults[i], this.canvasWidth, !this.axis);
 
         if (previous) {
           previous.next = segment;

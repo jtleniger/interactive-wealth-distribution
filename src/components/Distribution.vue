@@ -5,7 +5,7 @@
         <th :style="{ borderLeft: `2px solid ${colors[index]}`}">
           {{ percentile }}
         </th>
-        <td>
+        <td v-if="showValues">
           {{ prettyPercents[index] }}%
         </td>
       </tr>
@@ -17,6 +17,12 @@
 import { SEGMENT_COLORS } from '@/common.js';
 
 export default {
+  props: {
+    showValues: {
+      type: Boolean,
+      default: true
+    }
+  },
   data: function () {
     return {
       percentiles: [
