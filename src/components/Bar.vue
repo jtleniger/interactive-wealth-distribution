@@ -328,6 +328,6 @@ export default {
 <style scoped lang="scss">
 canvas {
   max-width: 1080px;
-  max-height: 55vh;
+  max-height: 50vh;
 }
 </style>

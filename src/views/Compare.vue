@@ -36,17 +36,17 @@ export default {
   justify-content: space-around;
   margin: 1rem;
   height: initial;
-
-  div:first-child {
-    padding-top: 0;
-  }
   
   > * {
     flex-basis: calc(33.3333333% - 1rem);
   }
 
+  span {
+    text-align: center;
+  }
+
   canvas {
-    max-height: 68vh;
+    max-height: 55vh;
     margin-top: 1rem;
   }
 
