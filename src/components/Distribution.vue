@@ -1,44 +1,12 @@
 <template>
   <div>
     <table>
-      <tr>
-        <th>
-          top 20%
+      <tr v-for="(percentile, index) in percentiles" v-bind:key="index">
+        <th :style="{ borderLeft: `2px solid ${colors[index]}`}">
+          {{ percentile }}
         </th>
         <td>
-          {{ prettyPercents[0] }}%
-        </td>
-      </tr>
-      <tr>
-        <th>
-          fourth 20%
-        </th>
-        <td>
-          {{ prettyPercents[1] }}%
-        </td>
-      </tr>
-      <tr>
-        <th>
-          middle 20%
-        </th>
-        <td>
-          {{ prettyPercents[2] }}%
-        </td>
-      </tr>
-      <tr>
-        <th>
-          second 20%
-        </th>
-        <td>
-          {{ prettyPercents[3] }}%
-        </td>
-      </tr>
-      <tr>
-        <th>
-          bottom 20%
-        </th>
-        <td>
-          {{ prettyPercents[4] }}%
+          {{ prettyPercents[index] }}%
         </td>
       </tr>
     </table>
@@ -46,7 +14,21 @@
 </template>
 
 <script>
+import { SEGMENT_COLORS } from '@/common.js';
+
 export default {
+  data: function () {
+    return {
+      percentiles: [
+        'top',
+        'fourth',
+        'middle',
+        'second',
+        'bottom'
+      ],
+      colors: SEGMENT_COLORS
+    }
+  },
   computed: {
     prettyPercents: function () {
       return this.$store.state.percents.map(p => Math.round(p));
@@ -75,5 +57,9 @@ th {
 
 td {
   text-align: right;
+}
+
+th, td {
+  padding: 0.1rem;
 }
 </style>

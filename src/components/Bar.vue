@@ -10,20 +10,14 @@
 </template>
 
 <script>
+import { SEGMENT_COLORS } from '@/common.js';
+
 const SEGMENT_COUNT = 5;
 const CANVAS_WIDTH = 1080;
 const CANVAS_HEIGHT = 1187;
-const HANDLE_THICKNESS = 10;
+const HANDLE_THICKNESS = 8;
 const AXIS_THICKNESS = HANDLE_THICKNESS;
 const CLICK_BUFFER = 40;
-
-const SEGMENT_COLORS = [
-  '#CE93D8',
-  '#9FA8DA',
-  '#81D4FA',
-  '#80CBC4',
-  '#C5E1A5'
-]
 
 const LIGHT_COLOR = '#BDBDBD';
 const BACKGROUND_COLOR = '#212121';
@@ -79,7 +73,7 @@ class Segment {
   }
 
   get handleEndX () {
-    return this.startX + this.width;
+    return this.startX + this.width - 1;
   }
 
   get handleEndY () {
@@ -158,7 +152,7 @@ export default {
     /* Drawing Methods */
     drawBackground: function () {
       this.ctx.fillStyle = BACKGROUND_COLOR;
-      this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+      this.ctx.fillRect(-0.5, -0.5, CANVAS_WIDTH, CANVAS_HEIGHT);
     },
     drawSegments: function () {
       for (var i = 0; i < SEGMENT_COUNT; i++) {
@@ -284,6 +278,7 @@ export default {
   mounted: function () {
     this.canvas = this.$refs.canvas;
     this.ctx = this.canvas.getContext('2d', { alpha: false });
+    this.ctx.translate(0.5, 0.5);
     window.addEventListener('mouseup', this.up);
     window.addEventListener('touchend', this.up);
     this.initSegments();
