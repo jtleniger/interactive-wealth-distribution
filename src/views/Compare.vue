@@ -5,8 +5,8 @@
     <div>reality</div>
     <bar :readonly="true" :axis="false" :values="this.$store.state.saved.ideal" :canvas-width="canvasWidth" />
     <bar :readonly="true" :axis="false" :values="this.$store.state.saved.current" :canvas-width="canvasWidth" />
-    <bar :readonly="true" :axis="false" :values="this.$store.state.saved.current" :canvas-width="canvasWidth" />
-    <distribution />
+    <bar :readonly="true" :axis="false" :values="this.$store.state.saved.reality" :canvas-width="canvasWidth" />
+    <distribution :show-values="false" />
   </div>
 </template>
 
@@ -46,8 +46,13 @@ export default {
   }
 
   canvas {
-    max-height: 70vh;
+    max-height: 68vh;
     margin-top: 1rem;
+  }
+
+  div:last-child {
+    margin-top: 1rem;
+    padding-bottom: 1rem;
   }
 }
 </style>

@@ -24,7 +24,7 @@ const LIGHT_COLOR = '#BDBDBD';
 const BACKGROUND_COLOR = '#212121';
 
 class Segment {
-  constructor (ctx, previous, index, percent, canvasWidth, fullWidth) {
+  constructor (ctx, previous, index, percent, canvasWidth, fullWidth, readonly) {
     this.ctx = ctx;
     this.previous = previous;
     this.next = null;
@@ -33,6 +33,7 @@ class Segment {
     this.color = SEGMENT_COLORS[index];
     this.fullWidth = fullWidth;
     this.canvasWidth = canvasWidth;
+    this.readonly = readonly;
   }
 
   get decimalPercent () {
@@ -87,7 +88,7 @@ class Segment {
     this.ctx.fillStyle = this.color;
     this.ctx.fillRect(this.startX, this.startY, this.width, this.height);
 
-    if (!this.previous) {
+    if (!this.previous || this.readonly) {
       return;
     }
 
@@ -290,7 +291,7 @@ export default {
       }
 
       for (var i = 0; i < SEGMENT_COUNT; i++) {
-        var segment = new Segment(this.ctx, previous, i, defaults[i], this.canvasWidth, !this.axis);
+        var segment = new Segment(this.ctx, previous, i, defaults[i], this.canvasWidth, !this.axis, this.readonly);
 
         if (previous) {
           previous.next = segment;

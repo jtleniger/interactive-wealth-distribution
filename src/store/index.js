@@ -10,7 +10,14 @@ export default new Vuex.Store({
     percents: [...INITIAL_PERCENTS],
     saved: {
       ideal: [],
-      current: []
+      current: [],
+      reality: [
+        84,
+        11,
+        4,
+        0.5,
+        0.3
+      ]
     }
   },
   mutations: {
