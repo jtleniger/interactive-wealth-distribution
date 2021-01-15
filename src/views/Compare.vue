@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <div>your ideal</div>
-    <div>your guess</div>
-    <div>reality</div>
+    <span>your ideal</span>
+    <span>your guess</span>
+    <span>reality</span>
     <bar :readonly="true" :axis="false" :values="this.$store.state.saved.ideal" :canvas-width="canvasWidth" />
     <bar :readonly="true" :axis="false" :values="this.$store.state.saved.current" :canvas-width="canvasWidth" />
     <bar :readonly="true" :axis="false" :values="this.$store.state.saved.reality" :canvas-width="canvasWidth" />
@@ -22,7 +22,7 @@ export default {
   },
   data: function () {
     return {
-      canvasWidth: 270
+      canvasWidth: 230
     }
   }
 }
@@ -51,7 +51,6 @@ export default {
   }
 
   div:last-child {
-    margin-top: 1rem;
     padding-bottom: 1rem;
   }
 }

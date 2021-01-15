@@ -4,6 +4,17 @@
   </div>
 </template>
 
+<script>
+export default {
+  beforeCreate: function () {
+    window.addEventListener('resize', () => {
+      let vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+  }
+}
+</script>
+
 <style lang="scss">
 * {
   box-sizing: border-box;
@@ -18,8 +29,8 @@ body {
   font-size: 13px;
   display: flex;
   justify-content: center;
-  height: 100vh;
   margin: 0;
+  height: calc(var(--vh, 1vh) * 100);
 }
 
 a {
@@ -44,10 +55,12 @@ a {
   justify-content: space-between;
   height: 100%;
 
+  canvas {
+    padding-top: 1rem;
+  }
+
   div {
-    &:first-child {
-      padding-top: 1rem;
-    }
+    padding-top: 1rem;
 
     &:last-child {
       padding-bottom: 2rem;
