@@ -18,6 +18,8 @@ body {
   font-size: 13px;
   display: flex;
   justify-content: center;
+  height: 100vh;
+  margin: 0;
 }
 
 a {
@@ -32,7 +34,7 @@ a {
 
 #app {
   max-width: 1080px;
-  min-height: 90vh;
+  height: 100%;
 }
 
 .container {
@@ -42,13 +44,13 @@ a {
   justify-content: space-between;
   height: 100%;
 
-  div, canvas {
-    padding-bottom: 1rem; 
-  }
-
   div {
     &:first-child {
       padding-top: 1rem;
+    }
+
+    &:last-child {
+      padding-bottom: 2rem;
     }
 
     text-align: center;
