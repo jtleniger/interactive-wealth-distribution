@@ -23,6 +23,11 @@ export default {
   box-sizing: border-box;
 }
 
+html {
+  position: fixed;
+  overflow: hidden;
+}
+
 $light-color: #BDBDBD;
 
 body {
