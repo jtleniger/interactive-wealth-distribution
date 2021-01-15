@@ -21,7 +21,7 @@ const HANDLE_COLOR = '#EEEEEE';
 const CLICK_BUFFER = 20;
 
 class Segment {
-  constructor (ctx, previousSegment, index, percent = 20) {
+  constructor (ctx, previousSegment, index, percent = 0.20) {
     this.ctx = ctx;
     this.previousSegment = previousSegment;
     this.index = index;
@@ -34,7 +34,7 @@ class Segment {
   }
 
   get height () {
-    return Math.round((this.percent / 100) * CANVAS_HEIGHT);
+    return Math.round(this.percent * CANVAS_HEIGHT);
   }
 
   get startX () {
@@ -95,6 +95,10 @@ class Segment {
   }
 }
 
+function canvasYPercentDelta(yStart, yStop) {
+  return (yStop - yStart) / CANVAS_HEIGHT;
+}
+
 function lerp(value, fromMin, fromMax, toMin, toMax) {
   return ((toMin * (fromMax - value)) + (toMax * (value - fromMin)) / (fromMax - fromMin));
 }
@@ -124,6 +128,7 @@ export default {
     return {
       dragging: null,
       segments: [],
+      canvas: null,
       ctx: null,
       startCoords: null,
       stopCoords: null
@@ -142,6 +147,9 @@ export default {
         previousSegment = segment;
       }
 
+      this.draw();
+    },
+    draw: function () {
       for (var j = 0; j < SEGMENT_COUNT; j++) {
         this.segments[j].draw();
       }
@@ -160,7 +168,9 @@ export default {
       this.startCoords = coords;
     },
     up: function (event) {
-      const coords = getCoordsFromEvent(event);
+      let coords = getCoordsFromEvent(event);
+
+      coords = this.convertToCanvasCoords(coords);
 
       const dragged = this.dragging;
 
@@ -172,8 +182,12 @@ export default {
 
       this.stopCoords = coords;
 
-      console.log(`Start: ${coords}`);
-      console.log(`Stop: ${coords}`);
+      const delta = canvasYPercentDelta(this.startCoords.y, this.stopCoords.y);
+
+      dragged.percent -= delta;
+      dragged.previousSegment.percent += delta;
+
+      this.draw();
     },
     clickedSegment: function (coords) {
       for (var i = 0; i < SEGMENT_COUNT; i++) {
@@ -192,7 +206,8 @@ export default {
     }
   },
   mounted: function () {
-    this.ctx = this.$refs.canvas.getContext('2d');
+    this.canvas = this.$refs.canvas;
+    this.ctx = this.canvas.getContext('2d');
     window.addEventListener('mouseup', this.up);
     window.addEventListener('touchend', this.up);
     this.initSegments();
