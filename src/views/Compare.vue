@@ -24,6 +24,24 @@ export default {
     return {
       canvasWidth: 230
     }
+  },
+  mounted: async function () {
+    const url = '/.netlify/functions/record';
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json;charset=UTF-8'
+      },
+      body: JSON.stringify((({ current, ideal }) => ({ current, ideal }))(this.$store.state.saved))
+    };
+
+    const response = await fetch(url, options);
+
+    if (response.status !== 200) {
+      console.log(response);
+    }
   }
 }
 </script>

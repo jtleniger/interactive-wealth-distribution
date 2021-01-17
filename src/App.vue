@@ -39,6 +39,7 @@ body {
   justify-content: center;
   margin: 0;
   height: calc(var(--vh, 1vh) * 100);
+  width: 100vw;
 }
 
 a {
