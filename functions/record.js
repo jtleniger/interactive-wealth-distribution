@@ -11,8 +11,11 @@ const db = admin.firestore();
 exports.handler = async function(event) {
   const { current, ideal } = JSON.parse(event.body);
 
-  await db.collection('current').add(current);
-  await db.collection('ideal').add(ideal);
+  console.log(current);
+  console.log(ideal);
+
+  await db.collection('current').add({ current });
+  await db.collection('ideal').add({ ideal });
 
   return {
       statusCode: 200
