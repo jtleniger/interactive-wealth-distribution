@@ -18,14 +18,14 @@ exports.handler = async function(event) {
 
   if (!currentDoc.exists || !idealDoc.exists) {
     if (!currentDoc.exists) {
-      await currentDoc.set({
+      await dataRef.doc('current').set({
         count: 1,
         values: newCurrentData
       });
     }
   
     if (!idealDoc.exists) {
-      await idealDoc.set({
+      await dataRef.doc('ideal').set({
         count: 1,
         values: newIdealData
       });
