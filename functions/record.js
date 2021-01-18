@@ -9,7 +9,9 @@ admin.initializeApp({
 const db = admin.firestore();
 
 exports.handler = async function(event) {
-  const { current: newCurrentData, ideal: newIdealData } = JSON.parse(event.body);
+  const { current: currentDataPoint, ideal: idealDataPoint } = JSON.parse(event.body);
+
+  console.log(`New data point, current: ${currentDataPoint}, ideal: ${idealDataPoint}`);
 
   const dataRef = db.collection('data');
 
@@ -18,16 +20,20 @@ exports.handler = async function(event) {
 
   if (!currentDoc.exists || !idealDoc.exists) {
     if (!currentDoc.exists) {
+      console.log('Missing current doc.');
+
       await dataRef.doc('current').set({
         count: 1,
-        values: newCurrentData
+        values: currentDataPoint
       });
     }
   
     if (!idealDoc.exists) {
+      console.log('Missing ideal doc.');
+
       await dataRef.doc('ideal').set({
         count: 1,
-        values: newIdealData
+        values: idealDataPoint
       });
     }
 
@@ -36,21 +42,32 @@ exports.handler = async function(event) {
     };
   }
 
-  let oldCurrentData = currentDoc.data();
-  let oldIdealData = idealDoc.data();
+  let existingCurrentData = currentDoc.data();
+  let existingIdealData = idealDoc.data();
 
-  oldCurrentData.count++;
-  oldIdealData.count++;
+  console.log('Exsting data:');
+  console.log(`Current: ${JSON.stringify(existingCurrentData)}`);
+  console.log(`Ideal: ${JSON.stringify(existingIdealData)}`);
 
-  await dataRef.doc('current').set({
-    count: oldCurrentData.count,
-    values: oldCurrentData.map((val, idx) => val + ((newCurrentData[idx] - val) / oldCurrentData.count))
-  })
+  existingCurrentData.count++;
+  existingIdealData.count++;
 
-  await dataRef.doc('ideal').set({
-    count: oldIdealData.count,
-    values: oldIdealData.map((val, idx) => val + ((newIdealData[idx] - val) / oldIdealData.count))
-  })
+  let newCurrentData = {
+    count: existingCurrentData.count,
+    values: existingCurrentData.values.map((val, idx) => val + ((currentDataPoint[idx] - val) / existingCurrentData.count))
+  };
+
+  let newIdealData = {
+    count: existingIdealData.count,
+    values: existingIdealData.values.map((val, idx) => val + ((idealDataPoint[idx] - val) / existingIdealData.count))
+  };
+
+  console.log('Computed new data:');
+  console.log(`Current: ${JSON.stringify(newCurrentData)}`);
+  console.log(`Ideal: ${JSON.stringify(newIdealData)}`);
+
+  await dataRef.doc('current').set(newCurrentData);
+  await dataRef.doc('ideal').set(newIdealData);
 
   return {
       statusCode: 200
