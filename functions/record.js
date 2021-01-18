@@ -42,12 +42,12 @@ exports.handler = async function(event) {
   oldCurrentData.count++;
   oldIdealData.count++;
 
-  await currentDoc.set({
+  await dataRef.doc('current').set({
     count: oldCurrentData.count,
     values: oldCurrentData.map((val, idx) => val + ((newCurrentData[idx] - val) / oldCurrentData.count))
   })
 
-  await idealDoc.set({
+  await dataRef.doc('ideal').set({
     count: oldIdealData.count,
     values: oldIdealData.map((val, idx) => val + ((newIdealData[idx] - val) / oldIdealData.count))
   })
